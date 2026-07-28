@@ -1,0 +1,422 @@
+:root {
+  --animation-ease: linear;
+  --snap: x mandatory;
+  --image: url('./assets/matcha.jpeg');
+}
+
+* {
+  box-sizing: border-box;
+}
+
+@property --scroll-pct {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+html {
+  margin: 0;
+  height: 100%;
+
+  -moz-font-smoothing: antialiased;
+  -webkit-font-smoothing: antialiased;
+  font-smoothing: antialiased;
+  text-rendering: optimizeLegibility !important;
+}
+
+body {
+  margin: 0;
+  font-family: 'Playfair Display', serif;
+  font-weight: 400;
+  background-color: #f5f5f5;
+  height: 100%;
+  timeline-scope: --carouselScroll;
+}
+
+
+.carousel-wrapper {
+  height: 100%;
+  width: 100%;
+  padding: 0 calc(50% - 140px);
+  display: flex;
+  align-items: center;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: var(--snap);
+  position: relative;
+  scroll-behavior: smooth;
+  overscroll-behavior-x: contain;
+  scroll-timeline: --carouselScroll inline;
+
+  body:not(.debug) & {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  @supports not (animation-timeline: view()) {
+    gap: 20px;
+  }
+
+}
+
+body:not(.debug) .carousel-wrapper::-webkit-scrollbar {
+  display: none;
+}
+
+.carousel-card {
+  scroll-snap-align: center;
+  flex-shrink: 0;
+  width: 280px;
+  height: 450px;
+  position: relative;
+
+  body.debug & {
+    outline: 1px solid red;
+  }
+
+
+  &:before {
+    content: "";
+    z-index: -1;
+    position: absolute;
+    top: 50%;
+    width: 120vw;
+    height: 120vh;
+    left: calc(50% - 60vw);
+    right: 0;
+    margin: 0 auto;
+    background-image: var(--image);
+    filter: blur(10px);
+    opacity: 0.2;
+    background-size: cover;
+    background-position: center center;
+    animation: bgImageAnimation linear both;
+    animation-timeline: view(inline);
+    animation-range: cover 40% cover 60%;
+
+    @supports not (animation-timeline: view()) {
+      animation: none !important;
+      transform: translate3d(-10%, -50%, 0);
+    }
+  }
+
+  &__content {
+    overflow: clip;
+    width: 100%;
+    height: 100%;
+    padding: 40px 30px;
+    background-color: #fff;
+    border-radius: 30px;
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    justify-content: flex-end;
+
+    transform-origin: 50% 200%;
+    transform: rotateZ(0deg);
+    box-shadow: 0px 20px 30px rgba(0, 0, 0, 0.2);
+
+    animation: cardContentAnimation var(--animation-ease) both;
+    animation-timeline: view(inline);
+    animation-range: cover 0% cover 100%;
+
+    @supports not (animation-timeline: view()) {
+      box-shadow: 0px 20px 30px rgba(0, 0, 0, 0.2);
+      animation: none !important;
+    }
+
+    &:before {
+      content: '';
+      opacity: .5;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to bottom, rgba(106, 83, 6, 0) 0%, rgba(106, 83, 6, 1) 100%);
+      border-radius: 30px;
+
+    }
+  }
+
+  &__bg {
+    z-index: -1;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: calc(100% + 200px);
+    height: calc(100% + 200px);
+    background-image: var(--image);
+    background-size: cover;
+    background-position: center center;
+    transform: translate3d(calc(-50%), -50%, 0);
+    animation: cardBgAnimation var(--animation-ease) both;
+    animation-timeline: view(inline);
+    animation-range: cover 0% cover 100%;
+
+    @supports not (animation-timeline: view()) {
+      z-index: 0;
+      animation: none !important;
+      transform: translate3d(-50%, -50%, 0);
+    }
+  }
+
+  &__info {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+
+  &__title {
+    color: #fff;
+    font-size: 30px;
+    animation: slideTitle var(--animation-ease) both;
+    animation-timeline: view(inline);
+    animation-range: cover 40% cover 60%;
+  }
+
+  &__subtitle {
+    color: #fff;
+    font-size: 16px;
+    overflow: clip;
+
+    span {
+      display: block;
+      animation: slideSubTitle var(--animation-ease) both;
+      animation-timeline: view(inline);
+      animation-range: contain 43% contain 57%;
+    }
+  }
+}
+
+.pct-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  background-color: #713916;
+  animation: pctBarAnimation linear both;
+  animation-timeline: --carouselScroll;
+  transform: translateX(calc(var(--scroll-pct) * 1% - 100%));
+  transform-origin: left;
+
+  &::after {
+    counter-reset: percentage calc(var(--scroll-pct) * 1);
+    content: counter(percentage) "%";
+    position: absolute;
+    font-size: 12px;
+    top: -30px;
+    right: 0px;
+    padding: 5px 10px;
+    border-radius: 50px;
+    background-color: #713916;
+    color: #fff
+  }
+}
+
+
+.h-scroll {
+  pointer-events: none;
+  position: absolute;
+  bottom: 70px;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  font-size: 16px;
+
+  svg {
+    width: 40px;
+  }
+}
+
+.change-browser {
+  pointer-events: none;
+  display: none;
+
+  @supports not (animation-timeline: view()) {
+    border: 1px solid #000;
+    max-width: 800px;
+    display: block;
+    position: absolute;
+    top: 80px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    font-size: 22px;
+    padding: 20px;
+  }
+}
+
+@keyframes cardContentAnimation {
+  0% {
+    transform-origin: -50% 200%;
+    transform: rotateZ(30deg);
+    box-shadow: 100px 20px 30px rgba(0, 0, 0, 0.2);
+  }
+
+  50% {
+    transform-origin: 50% 200%;
+    transform: rotateZ(0deg);
+    box-shadow: 0px 20px 30px rgba(0, 0, 0, 0.2);
+  }
+
+  100% {
+    transform-origin: 150% 200%;
+    transform: rotateZ(-30deg);
+    box-shadow: -100px 20px 30px rgba(0, 0, 0, 0.2);
+  }
+}
+
+@keyframes slideTitle {
+  0% {
+    transform: translateX(100px);
+    opacity: 0;
+  }
+
+  50% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateX(-100px);
+    opacity: 0;
+  }
+}
+
+@keyframes slideSubTitle {
+  0% {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+
+  50% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+}
+
+@keyframes bgImageAnimation {
+  0% {
+    opacity: 0;
+    transform: translate3d(-10%, -50%, 0);
+  }
+
+  50% {
+    opacity: .35;
+    transform: translate3d(0, -50%, 0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(10%, -50%, 0);
+  }
+}
+
+@keyframes cardBgAnimation {
+  0% {
+    transform: translate3d(calc(-50% + 100px), -50%, 0);
+  }
+
+  50% {
+    transform: translate3d(calc(-50%), -50%, 0);
+  }
+
+  100% {
+    transform: translate3d(calc(-50% - 100px), -50%, 0);
+  }
+}
+
+@keyframes pctBarAnimation {
+  0% {
+    --scroll-pct: 0;
+  }
+
+  100% {
+    --scroll-pct: 100;
+  }
+}
+
+
+// FOOTER
+$breakpoint-footer-sm: 550px;
+
+.co-footer {
+  display: block;
+  position: absolute;
+  bottom: 0px;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 5px 0px;
+  margin-bottom: 15px;
+
+  &-links {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    flex-direction: column;
+    column-gap: 10px;
+
+    @media (min-width: $breakpoint-footer-sm) {
+      flex-direction: row;
+    }
+  }
+
+  &-btn {
+    padding: 7px 10px;
+    font-weight: 500;
+    font-size: 14px;
+    text-transform: uppercase;
+    border: 1px solid #000;
+    border-radius: 5px;
+    background: transparent;
+    text-decoration: none;
+    color: #000;
+    text-align: center;
+    margin-bottom: 10px;
+
+    &:hover {
+      color: #fff;
+      background-color: #000;
+    }
+
+    &--link {
+      border: 1px solid transparent;
+      text-decoration: underline;
+
+      &:hover {
+        color: #fff;
+        background-color: #6a5306;
+      }
+
+      &:after {
+        text-decoration: none;
+        font-weight: 800;
+        font-family: arial;
+        content: "↗";
+      }
+    }
+  }
+}
