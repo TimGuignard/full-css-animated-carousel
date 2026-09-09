@@ -194,6 +194,7 @@ body:not(.debug) .carousel-wrapper::-webkit-scrollbar {
 
 .pct-bar {
   position: fixed;
+  z-index: 9;
   bottom: 0;
   left: 0;
   width: 100%;
