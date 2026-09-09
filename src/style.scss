@@ -222,7 +222,7 @@ body:not(.debug) .carousel-wrapper::-webkit-scrollbar {
 .h-scroll {
   pointer-events: none;
   position: absolute;
-  bottom: 70px;
+  bottom: 80px;
   left: 0;
   right: 0;
   margin: 0 auto;
@@ -230,7 +230,7 @@ body:not(.debug) .carousel-wrapper::-webkit-scrollbar {
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  font-size: 16px;
+  font-size: 14px;
 
   svg {
     width: 40px;
@@ -356,8 +356,6 @@ body:not(.debug) .carousel-wrapper::-webkit-scrollbar {
 
 
 // FOOTER
-$breakpoint-footer-sm: 550px;
-
 .co-footer {
   display: block;
   position: absolute;
@@ -369,25 +367,20 @@ $breakpoint-footer-sm: 550px;
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  padding: 5px 0px;
+  padding: 0px 0px;
   margin-bottom: 15px;
 
   &-links {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
-    flex-direction: column;
     column-gap: 10px;
-
-    @media (min-width: $breakpoint-footer-sm) {
-      flex-direction: row;
-    }
   }
 
   &-btn {
     padding: 7px 10px;
     font-weight: 500;
-    font-size: 14px;
+    font-size: 12px;
     text-transform: uppercase;
     border: 1px solid #000;
     border-radius: 5px;
